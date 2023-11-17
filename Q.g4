@@ -3,19 +3,21 @@ grammar Q;
 // Rules
 program : ;
 
-// Value, so an int, string, or identifier, etc
+// Value, so an int, string, or variable, etc
 value :
     IDENTIFIER |
     NUM |
     STRING |
     // Function return value. f(x)
-    IDENTIFIER LPAREN (params)? RPAREN
+    IDENTIFIER LPAREN (params)? RPAREN |
+    selfCall
       ;
 
 // Variable assignment
 // var x = 300;
 assignment :
-    (VAR | CONST) IDENTIFIER EQUALS value SEMICOLON
+    (VAR | CONST) IDENTIFIER EQUALS value SEMICOLON |
+    LET IDENTIFIER vType EQUALS value
     ;
 
 // Function definition
@@ -23,7 +25,7 @@ assignment :
 // or
 // priv fn retType() -> int { return int }
 fnDefine :
-    ( PUB | PRIV ) FN IDENTIFIER LPAREN params RPAREN (MINUS GT vType)? LBRACE program RBRACE |
+    ( PUB | PRIV ) FN IDENTIFIER LPAREN params RPAREN (MINUS GT vType)? LBRACE block RBRACE |
     ;
 
 // Define statement
@@ -50,8 +52,10 @@ params :
 // addTwoNums(x, y);
 // or the @ version, which doesn't require (), but can't take params.
 // @printTheNumberOne
+// Or call the parent class as well.
+// std::coutln("Hello, World!");
 fnCall :
-    IDENTIFIER LPAREN (params)? RPAREN SEMICOLON |
+    ( IDENTIFIER ACCESSOR )? IDENTIFIER LPAREN (params)? RPAREN SEMICOLON |
     AT IDENTIFIER SEMICOLON
     ;
 
@@ -88,6 +92,12 @@ modu :
     value MOD value
     ;
 
+// A 'self' statement.
+// Used to access members of a class, similar to 'this'
+selfCall :
+    SELF ACCESSOR IDENTIFIER
+    ;
+
 // Math statement, any operation can be wrapped in parentheses.
 mathStatement :
     LPAREN add RPAREN |
@@ -100,6 +110,15 @@ mathStatement :
     div |
     LPAREN modu RPAREN |
     modu
+    ;
+
+// Block statement. This is used to define everything that can be used within something like a function.
+// For instance, the 'program' rule, includes function definition, the block rule does not.
+// This is because you cannot define a function, within another function.
+block :
+    mathStatement |
+    fnCall |
+    assignment
     ;
 
 // Keywords
@@ -154,6 +173,7 @@ LBRACE  : '{';
 COMMA   : ',';
 GT      : '>';
 LT      : '<';
+ACCESSOR: '::';
 
 // Technical
 // Regex expressions for Identifiers, Strings, Numbers, etc.
