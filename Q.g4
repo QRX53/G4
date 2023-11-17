@@ -63,24 +63,43 @@ classDef :
     (PUB | PRIV) CLASS IDENTIFIER (FROM IDENTIFIER)? 
     ;
 
+// Addition rule, not complicated, just x + y
 add :
     value PLUS value
     ;
 
+// Subtraction rule
 sub :
     value MINUS value
     ;
 
+// Multiplication rule
 mul :
     value STAR value
     ;
 
+// Division rule
 div :
     value SLASH value
     ;
 
+// Modulus rule (return the remainder)
 modu :
     value MOD value
+    ;
+
+// Math statement, any operation can be wrapped in parentheses.
+mathStatement :
+    LPAREN add RPAREN |
+    add |
+    LPAREN sub RPAREN |
+    sub |
+    LPAREN mul RPAREN |
+    mul |
+    LPAREN div RPAREN |
+    div |
+    LPAREN modu RPAREN |
+    modu
     ;
 
 // Keywords
