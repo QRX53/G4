@@ -112,6 +112,15 @@ mathStatement :
     modu
     ;
 
+// Try/catch blocks. Error handling
+// try { // code } catch (e) { // code }
+// or without catch block, which will just destroy the error message and continue running the program.
+// This method MAY CAUSE UNEXPECTED PROBLEMS
+// try { // code }
+tryCatch :
+    TRY LBRACE block RBRACE (CATCH LPAREN IDENTIFIER RPAREN LBRACE block RBRACE)
+    ;
+
 // Block statement. This is used to define everything that can be used within something like a function.
 // For instance, the 'program' rule, includes function definition, the block rule does not.
 // This is because you cannot define a function, within another function.
@@ -139,6 +148,8 @@ DEF     : 'define' ;
 SELF    : 'self';
 RETURN  : 'return';
 FROM    : 'from';
+TRY     : 'try';
+CATCH   : 'catch';
 
 // Variable types
 INT     : 'int';
