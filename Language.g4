@@ -1,4 +1,4 @@
-grammar Q;
+grammar Language;
 
 // Rules
 program : ;
