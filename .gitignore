@@ -1,0 +1,5 @@
+// general
+/.antlr
+
+// macOS
+.DS_STORE
