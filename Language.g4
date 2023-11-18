@@ -9,14 +9,14 @@ value :
     NUM |
     STRING |
     // Function return value. f(x)
-    IDENTIFIER LPAREN (params)? RPAREN |
+    IDENTIFIER LPAREN ( params )? RPAREN |
     selfCall
       ;
 
 // Variable assignment
 // var x = 300;
 assignment :
-    (VAR | CONST) IDENTIFIER EQUALS value SEMICOLON |
+    ( VAR | CONST ) IDENTIFIER EQUALS value SEMICOLON |
     LET IDENTIFIER vType EQUALS value
     ;
 
@@ -25,7 +25,7 @@ assignment :
 // or
 // priv fn retType() -> int { return int }
 fnDefine :
-    ( PUB | PRIV ) FN IDENTIFIER LPAREN params RPAREN (MINUS GT vType)? LBRACE block RBRACE |
+    ( PUB | PRIV ) FN IDENTIFIER LPAREN params RPAREN ( MINUS GT vType )? LBRACE block RBRACE |
     ;
 
 // Define statement
@@ -45,7 +45,7 @@ vType :
 
 // Parameters rule, used almost exclusively for function definition and function calls
 params :
-    value (COMMA value)*?
+    value ( COMMA value )*?
     ;
 
 // Function call
@@ -55,7 +55,7 @@ params :
 // Or call the parent class as well.
 // std::coutln("Hello, World!");
 fnCall :
-    ( IDENTIFIER ACCESSOR )? IDENTIFIER LPAREN (params)? RPAREN SEMICOLON |
+    ( IDENTIFIER ACCESSOR )? IDENTIFIER LPAREN ( params )? RPAREN SEMICOLON |
     AT IDENTIFIER SEMICOLON
     ;
 
@@ -64,7 +64,7 @@ fnCall :
 // or
 // priv class Apple { // code }
 classDef :
-    (PUB | PRIV) CLASS IDENTIFIER (FROM IDENTIFIER)? 
+    ( PUB | PRIV ) CLASS IDENTIFIER ( FROM IDENTIFIER )? 
     ;
 
 // Addition rule, not complicated, just x + y
@@ -119,6 +119,35 @@ mathStatement :
 // try { // code }
 tryCatch :
     TRY LBRACE block RBRACE (CATCH LPAREN IDENTIFIER RPAREN LBRACE block RBRACE)
+    ;
+
+// Conditional statements. Could just be a value, or could be:
+// value > value
+// Or similar
+conditional :
+    value |
+    value GTEQ value |
+    value LTEQ value |
+    value EQEQ value |
+    value NOTEQ value
+    ;
+
+// Very basic if statement
+// if (cond) { // code } elif { // code } else { // code }
+ifStatement :
+    IF LPAREN conditional RPAREN LBRACE block RBRACE ( elifStatement )*? ( elseStatement )*?
+    ;
+
+// Elif statement.
+// This is a seperate statement from 'ifStatement' for readability.
+elifStatement :
+    ELIF LPAREN conditional RPAREN LBRACE block RBRACE
+    ;
+
+// Else statement.
+// This is a seperate statement from 'ifStatement' for readability.
+elseStatement :
+    ELSE LPAREN conditional RPAREN LBRACE block RBRACE
     ;
 
 // Block statement. This is used to define everything that can be used within something like a function.
@@ -185,6 +214,14 @@ COMMA   : ',';
 GT      : '>';
 LT      : '<';
 ACCESSOR: '::';
+GTEQ    : '>=';
+LTEQ    : '<=';
+EQEQ    : '==';
+NOTEQ   : '!=';
+SLASHEQ : '/=';
+MULEQ   : '*=';
+PLUSEQ  : '+=';
+MINUSEQ : '-=';
 
 // Technical
 // Regex expressions for Identifiers, Strings, Numbers, etc.
