@@ -69,47 +69,29 @@ classDef :
 
 // Addition rule, not complicated, just x + y
 add :
-    value PLUS value
+    term (PLUS term)*
     ;
 
 // Subtraction rule
 sub :
-    value MINUS value
+    term (MINUS term)*
     ;
 
-// Multiplication rule
-mul :
-    value STAR value
+// Multiplication, division, and modulus rule
+term :
+    value (STAR value | SLASH value | MOD value)*?
     ;
 
-// Division rule
-div :
-    value SLASH value
+// Math statement, any operation can be wrapped in parentheses.
+mathStatement :
+    LPAREN sub RPAREN | sub
     ;
 
-// Modulus rule (return the remainder)
-modu :
-    value MOD value
-    ;
 
 // A 'self' statement.
 // Used to access members of a class, similar to 'this'
 selfCall :
     SELF ACCESSOR IDENTIFIER
-    ;
-
-// Math statement, any operation can be wrapped in parentheses.
-mathStatement :
-    LPAREN add RPAREN |
-    add |
-    LPAREN sub RPAREN |
-    sub |
-    LPAREN mul RPAREN |
-    mul |
-    LPAREN div RPAREN |
-    div |
-    LPAREN modu RPAREN |
-    modu
     ;
 
 // Try/catch blocks. Error handling
@@ -125,11 +107,17 @@ tryCatch :
 // value > value
 // Or similar
 conditional :
-    value |
-    value GTEQ value |
-    value LTEQ value |
-    value EQEQ value |
-    value NOTEQ value
+    relationExpression | value
+    ;
+
+// Part of the conditional section above, this is to compare 2 values.
+relationExpression :
+    value relationalOperator value
+    ;
+
+// All comparison keywords/tokens in one rule, for use in the relationExpression rule.
+relationalOperator :
+    GTEQ | LTEQ | EQEQ | NOTEQ
     ;
 
 // Very basic if statement
@@ -150,13 +138,40 @@ elseStatement :
     ELSE LPAREN conditional RPAREN LBRACE block RBRACE
     ;
 
+// Fairly basic while statement.
+// while (x == 1) { // code }
+whileStatement :
+    WHILE LPAREN conditional RPAREN LBRACE block RBRACE
+    ;
+
+// An iterating for statement, very very similar to Java
+// for (x in list) { // code }
+enhancedForStatement :
+    FOR LPAREN value IN value RPAREN LBRACE block RBRACE
+    ;
+
+// Regular for statement. Also very very similar to Java
+// for (i = 0; i < 5; i++) { // code }
+forStatement :
+    FOR LPAREN
+        IDENTIFIER EQUALS value SEMICOLON 
+        relationExpression SEMICOLON 
+        IDENTIFIER ( PLUSPLUS | MINMIN ) RPAREN
+        LBRACE block RBRACE
+    ;
+
 // Block statement. This is used to define everything that can be used within something like a function.
 // For instance, the 'program' rule, includes function definition, the block rule does not.
 // This is because you cannot define a function, within another function.
 block :
     mathStatement |
     fnCall |
-    assignment
+    assignment |
+    forStatement |
+    whileStatement |
+    enhancedForStatement |
+    ifStatement |
+    tryCatch
     ;
 
 // Keywords
@@ -168,6 +183,7 @@ IF      : 'if'  ;
 ELSE    : 'else';
 ELIF    : 'elif';
 VOID    : 'void';
+IN      : 'in';
 CLASS   : 'class';
 PUB     : 'pub' ;
 PRIV    : 'priv';
@@ -179,6 +195,8 @@ RETURN  : 'return';
 FROM    : 'from';
 TRY     : 'try';
 CATCH   : 'catch';
+WHILE   : 'while';
+FOR     : 'for';
 
 // Variable types
 INT     : 'int';
@@ -222,6 +240,8 @@ SLASHEQ : '/=';
 MULEQ   : '*=';
 PLUSEQ  : '+=';
 MINUSEQ : '-=';
+PLUSPLUS: '++';
+MINMIN  : '--';
 
 // Technical
 // Regex expressions for Identifiers, Strings, Numbers, etc.
