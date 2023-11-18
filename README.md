@@ -1,3 +1,5 @@
 # G4
-Example of an interpreted ANTLR language. Only the G4 file is included here so you can generate it in whatever language you want.
-Whole thing is well commented, and very readable.
+
+Example ANTLR4 G4 file. Contains all tokens, rules, and keywords nessesary to generate a simple ANTLR based interpreted programming language.
+
+No other code is included, so to build it you will have to generate the ANTLR files yourself, see [this site for help](https://www.antlr.org).
